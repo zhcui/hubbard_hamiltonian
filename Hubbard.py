@@ -30,7 +30,7 @@ elif len(sys.argv) == 3:
     Nx, Ny = 2, 4
     t = 1.0
 else:
-    nelec = 8
+    nelec = 12
     U = 4.0
     Nx, Ny = 4, 4
     t = 1.0
@@ -106,6 +106,7 @@ np.fill_diagonal(dm0, nelec/float(dm0.shape[0]))
 
 if doscf:
     mf.max_cycle = 50
+    mf.conv_tol = 2e-14
 else:
     mf.max_cycle = 0
 res = mf.run(dm0)
