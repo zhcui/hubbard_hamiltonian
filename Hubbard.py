@@ -32,9 +32,10 @@ elif len(sys.argv) == 3:
 else:
     nelec = 8
     U = 4.0
-    Nx, Ny = 2, 4
+    Nx, Ny = 4, 4
     t = 1.0
 
+doscf = False
 DEBUG = False
 np.set_printoptions(3, linewidth =1000)
 
@@ -103,13 +104,16 @@ dm0 = np.zeros_like(h1)
 np.fill_diagonal(dm0, nelec/float(dm0.shape[0]))
 
 
-
-mf.max_cycle = 50
+if doscf:
+    mf.max_cycle = 50
+else:
+    mf.max_cycle = 0
 res = mf.run(dm0)
 print "scf energy :", res.e_tot
-mf = mf.newton()
-res = mf.run(mf.mo_coeff)
-print "scf energy (newton) :", res.e_tot
+if doscf:
+    mf = mf.newton()
+    res = mf.run(mf.mo_coeff)
+    print "scf energy (newton) :", res.e_tot
 print 
 
 rdm = mf.make_rdm1()
