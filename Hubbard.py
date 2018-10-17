@@ -12,13 +12,28 @@ Zhihao Cui
 import numpy as np
 from pyscf import gto, scf, ao2mo, lo, mcscf
 from pyscf import tools
+import sys
 
 ### parameters:
 
-nelec = 8
-Nx, Ny = 2, 4
-t = 1.0
-U = 4.0
+if len(sys.argv) == 5:
+    nelec, U, Nx, Ny = sys.argv[1:]
+    nelec = int(nelec)
+    U = float(U)
+    Nx = int(Nx)
+    Ny = int(Ny)
+    t = 1.0
+elif len(sys.argv) == 3:
+    nelec, U = sys.argv[1:] 
+    nelec = int(nelec)
+    U = float(U)
+    Nx, Ny = 2, 4
+    t = 1.0
+else:
+    nelec = 8
+    U = 4.0
+    Nx, Ny = 2, 4
+    t = 1.0
 
 DEBUG = False
 np.set_printoptions(3, linewidth =1000)
