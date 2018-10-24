@@ -30,13 +30,13 @@ elif len(sys.argv) == 3:
     Nx, Ny = 2, 4
     t = 1.0
 else:
-    nelec = 6
+    nelec = 12
     U = 4.0
-    Nx, Ny = 2, 4
+    Nx, Ny = 4, 4
     t = 1.0
 
-doscf = True
-DEBUG = True
+doscf = False
+DEBUG = False
 np.set_printoptions(3, linewidth =1000)
 
 
@@ -100,7 +100,6 @@ mf.get_hcore = lambda *args: h1
 mf.get_ovlp = lambda *args: np.eye(norb)
 mf._eri = ao2mo.restore(8, eri, norb)
 
-
 dm0 = np.zeros_like(h1)
 np.fill_diagonal(dm0, nelec/float(dm0.shape[0]))
 
@@ -108,7 +107,6 @@ np.fill_diagonal(dm0, nelec/float(dm0.shape[0]))
 if doscf:
     mf.max_cycle = 50
     mf.conv_tol = 2e-14
-    mf.diis = False
 else:
     mf.max_cycle = 0
 res = mf.run(dm0)
@@ -155,25 +153,6 @@ if DEBUG:
 
 
 ### LMO basis
-# simple 2e integral transformation
-
-def incore_transform(eri_, c):
-    print c.shape
-    print eri_.shape
-    #exit()
-    eriA = np.tensordot(c, eri_, (0, 0))
-    eriA = np.tensordot(c, eriA, (0, 1))
-    eriA = np.tensordot(eriA, c, (3, 0))
-    eriA = np.tensordot(eriA, c, (2, 0))
-    #eriB = np.tensordot(c[0][1], eri_[1], (0, 0))
-    #eriB = np.tensordot(c[1][1], eriB, (0, 1))
-    #eriB = np.tensordot(eriB, c[3][1], (3, 0))
-    #eriB = np.tensordot(eriB, c[2][1], (2, 0))
-    #eriAB = np.tensordot(c[0][0], eri_[2], (0, 0))
-    #eriAB = np.tensordot(c[1][0], eriAB, (0, 1))
-    #eriAB = np.tensordot(eriAB, c[3][1], (3, 0))
-    #eriAB = np.tensordot(eriAB, c[2][1], (2, 0))
-    return eriA
 
 def split_localize(orbs, info, h1e, h2e, h0):
     from libdmet.routine.localizer import Localizer
@@ -210,21 +189,10 @@ def split_localize(orbs, info, h1e, h2e, h0):
 
     h1e_new = rotmat.T.dot(h1e.dot(rotmat))
 
-
-    h2e_bx = incore_transform(h2e, rotmat)
-    h2e_bx_compact = ao2mo.restore(4, h2e_bx, norbs)
     h2e_compact = ao2mo.restore(4, h2e, norbs)
     h2e_new = ao2mo.incore.full(h2e_compact, rotmat)
     
-    print h2e_bx_compact
-    print h2e_new
-    print np.linalg.norm(h2e_bx_compact - h2e_new)
-    exit()
-
     return h1e_new, h2e_new, h0, localorbs, rotmat
-
-
-
 
 
 nocc = (np.array(mo_occ) > 0).sum()
