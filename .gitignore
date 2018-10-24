@@ -104,3 +104,5 @@ venv.bak/
 .mypy_cache/
 
 8x8/
+
+test
